@@ -110,9 +110,9 @@ class rb_source_workbook_submission extends rb_base_source {
         // requires the position_assignment join
         $this->add_manager_tables_to_joinlist($joinlist,
             'position_assignment', 'reportstoid');
-        $this->add_tag_tables_to_joinlist('course', $joinlist, 'course', 'courseid');
+        $this->add_tag_tables_to_joinlist('course', $joinlist, 'course', 'id');
         $this->add_cohort_user_tables_to_joinlist($joinlist, 'base', 'userid');
-        $this->add_cohort_course_tables_to_joinlist($joinlist, 'course', 'courseid');
+        $this->add_cohort_course_tables_to_joinlist($joinlist, 'course', 'id');
 
         return $joinlist;
     }
@@ -352,7 +352,7 @@ class rb_source_workbook_submission extends rb_base_source {
                 'date'
             ),
             new rb_filter_option(
-                'base',
+                'workbook_page_item',
                 'itemtype',
                 get_string('itemtype', 'rb_source_workbook_submission'),
                 'select',
@@ -361,7 +361,7 @@ class rb_source_workbook_submission extends rb_base_source {
                 )
             ),
             new rb_filter_option(
-                'base',
+                'workbook_page_item',
                 'name',
                 get_string('itemname', 'rb_source_workbook_submission'),
                 'text'
