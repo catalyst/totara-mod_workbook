@@ -30,8 +30,8 @@
 defined('MOODLE_INTERNAL') || die();
 
 $plugin->component = 'mod_workbook';
-$plugin->version = 2016120600;
+$plugin->version = 2017081500;
 $plugin->release = 'v1.0';
-$plugin->requires = 2015051100;
+$plugin->requires = 2015111600;
 $plugin->maturity = MATURITY_STABLE;
 $plugin->dependencies = array();
