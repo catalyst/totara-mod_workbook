@@ -25,8 +25,12 @@
  *
  */
 
+define('AJAX_SCRIPT', true);
+
 require_once(dirname(dirname(dirname(__FILE__))).'/config.php');
 require_once($CFG->dirroot.'/mod/workbook/lib.php');
+
+require_sesskey();
 
 $workbookid = required_param('wid', PARAM_INT);
 $action = required_param('action', PARAM_ALPHA);

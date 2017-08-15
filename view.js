@@ -84,6 +84,7 @@ M.mod_workbook_view = M.mod_workbook_view || {
             url: M.cfg.wwwroot+'/mod/workbook/ajax.php',
             type: 'GET',
             data: {
+                'sesskey' : M.cfg.sesskey,
                 'action': 'getpage',
                 'wid': this.config.workbookid,
                 'userid': this.config.userid,
@@ -93,7 +94,6 @@ M.mod_workbook_view = M.mod_workbook_view || {
                 content.html('').append(objscope.loadingImg('large'));
             },
             success: function(data) {
-                var data = $.parseJSON(data);
                 if (data.status == 'success') {
                     content.html(data.content);
                     //window.scrollTo(0, 0);
@@ -145,6 +145,7 @@ M.mod_workbook_view = M.mod_workbook_view || {
                 url: M.cfg.wwwroot+'/mod/workbook/ajax.php',
                 type: 'POST',
                 data: {
+                    'sesskey' : M.cfg.sesskey,
                     'action': 'itemdraft',
                     'wid': objscope.config.workbookid,
                     'userid': objscope.config.userid,
@@ -156,7 +157,6 @@ M.mod_workbook_view = M.mod_workbook_view || {
                 },
                 success: function(data) {
                     workbookitem.find('.mod-workbook-loadingimg').remove();
-                    var data = $.parseJSON(data);
                     if (data.status == 'success') {
                         workbookitem.find('.mod-workbook-submission-status').html(data.submissionstatus);
                         workbookitem.find('.mod-workbook-submission-timemodified').html(data.timemodified);
@@ -192,6 +192,7 @@ M.mod_workbook_view = M.mod_workbook_view || {
                 url: M.cfg.wwwroot+'/mod/workbook/ajax.php',
                 type: 'POST',
                 data: {
+                    'sesskey' : M.cfg.sesskey,
                     'action': 'itemsubmit',
                     'wid': objscope.config.workbookid,
                     'userid': objscope.config.userid,
@@ -204,7 +205,6 @@ M.mod_workbook_view = M.mod_workbook_view || {
                     workbookitem.children('.mod-workbook-submission-timemodified').append(objscope.loadingImg());
                 },
                 success: function(data) {
-                    var data = $.parseJSON(data);
                     if (data.status == 'success') {
                         workbookitem.find('.mod-workbook-submission-status').html(data.submissionstatus);
                         workbookitem.find('.mod-workbook-submission-timemodified').html(data.timemodified);
@@ -238,6 +238,7 @@ M.mod_workbook_view = M.mod_workbook_view || {
                 url: M.cfg.wwwroot+'/mod/workbook/ajax.php',
                 type: 'POST',
                 data: {
+                    'sesskey' : M.cfg.sesskey,
                     'action': 'grade',
                     'wid': objscope.config.workbookid,
                     'userid': objscope.config.userid,
@@ -249,7 +250,6 @@ M.mod_workbook_view = M.mod_workbook_view || {
                 },
                 success: function(data) {
                     gradecontainer.find('.mod-workbook-loadingimg').remove();
-                    var data = $.parseJSON(data);
                     if (data.status == 'success') {
                         workbookitem.find('.mod-workbook-submission-status').html(data.submissionstatus);
                         workbookitem.find('.mod-workbook-submission-grading').html(data.gradinghtml);
