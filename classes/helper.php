@@ -99,5 +99,4 @@ class helper {
 
         return is_enrolled($context, $workbookuserid) && $USER->id == $workbookuserid && has_capability('mod/workbook:view', $context);
     }
-
 }

@@ -47,6 +47,7 @@
         <FIELD NAME="content" TYPE="text" NOTNULL="true" SEQUENCE="false"/>
         <FIELD NAME="requiredgrade" TYPE="float" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
         <FIELD NAME="allowcomments" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="allowfileuploads" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
         <FIELD NAME="sortorder" TYPE="int" LENGTH="4" NOTNULL="false" DEFAULT="1" SEQUENCE="false"/>
       </FIELDS>
       <KEYS>
@@ -56,6 +57,7 @@
       <INDEXES>
         <INDEX NAME="itemtype" UNIQUE="false" FIELDS="itemtype"/>
         <INDEX NAME="allowcomments" UNIQUE="false" FIELDS="allowcomments"/>
+        <INDEX NAME="allowfileuploads" UNIQUE="false" FIELDS="allowfileuploads"/>
         <INDEX NAME="sortorder" UNIQUE="false" FIELDS="sortorder"/>
       </INDEXES>
     </TABLE>

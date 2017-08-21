@@ -374,6 +374,15 @@ function workbook_pluginfile($course, $cm, $context, $filearea, array $args, $fo
 
     require_login($course, true, $cm);
 
+    if ($filearea == 'submissions') {
+        // Check permissions to submission files.
+        $submissionid = $args[0];
+        $submission = $DB->get_record('workbook_page_item_submit', array('id' => $submissionid), '*', MUST_EXIST);
+        if (!\mod_workbook\helper::can_submit($context, $submission->userid)  && !\mod_workbook\helper::can_assess($context, $submission->userid)) {
+            return false;
+        }
+    }
+
     $fs = get_file_storage();
     $relativepath = implode('/', $args);
     $fullpath = "/$context->id/mod_workbook/$filearea/$relativepath";

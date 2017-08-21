@@ -77,6 +77,7 @@ if ($data = $form->get_data()) {
     $item->name = $data->name;
     $item->requiredgrade = empty($data->requiredgrade) ? 0 : $data->requiredgrade;
     $item->allowcomments = $data->allowcomments;
+    $item->allowfileuploads = $data->allowfileuploads;
 
     if (empty($data->id)) {
         // Add.

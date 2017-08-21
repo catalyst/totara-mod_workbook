@@ -44,10 +44,19 @@ function xmldb_workbook_upgrade($oldversion) {
 
     $dbman = $DB->get_manager(); // Loads ddl manager and xmldb classes.
 
-    if ($oldversion < 2015042200) {
+    if ($oldversion < 2016060904) {
+
+        // Define field allowfileuploads to be added to workbook_page_item.
+        $table = new xmldb_table('workbook_page_item');
+        $field = new xmldb_field('allowfileuploads', XMLDB_TYPE_INTEGER, '1', null, XMLDB_NOTNULL, null, '0', 'allowcomments');
+
+        // Conditionally launch add field allowfileuploads.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
 
         // Workbook savepoint reached.
-        upgrade_mod_savepoint(true, 2015042200, 'workbook');
+        upgrade_mod_savepoint(true, 2016060904, 'workbook');
     }
 
 

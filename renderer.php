@@ -168,33 +168,32 @@ class mod_workbook_renderer extends plugin_renderer_base {
                 $out .= html_writer::tag('h5', $USER->id == $userworkbook->userid ?
                         get_string('yourresponse', 'workbook') :
                         get_string('response:', 'workbook'));
-                $response = empty($item->submission->response) ? '' : $item->submission->response;
-                $out .= $itemclass->display_response_input($response, !$userworkbook->can_submit_item($item));
+                $historylink = html_writer::link(
+                    new moodle_url('/mod/workbook/submissionhistory.php',
+                        array('piid' => $item->id, 'userid' => $userworkbook->userid)),
+                    get_string('submissionhistory', 'workbook'),
+                    array('class' => 'mod-workbook-item-submission-history-link')
+                );
+                $out .= $historylink;
+                $out .= $itemclass->display_response_input($userworkbook->userid, $item->submission, !$userworkbook->can_submit_item($item));
                 $out .= html_writer::end_tag('div');
 
                 // Response time modified.
                 $out .= html_writer::start_tag('div', array('class' => 'mod-workbook-submission-timemodified'));
-                if (!empty($item->submission)) {
-                    $out .= get_string('modifiedonx', 'workbook', userdate($item->submission->timemodified, get_string('strftimedatetimeshort')));
-                }
+                $out .= get_string('modifiedonx', 'workbook', userdate($item->submission->timemodified, get_string('strftimedatetimeshort')));
                 $out .= html_writer::end_tag('div');
 
-                $sitrepstyle = empty($item->submission) ? 'display:none' : '';
-                $out .= html_writer::start_tag('div', array('class' => 'mod-workbook-item-sitrep', 'style' => $sitrepstyle));
+                $out .= html_writer::start_tag('div', array('class' => 'mod-workbook-item-sitrep'));
 
                 // Submission status.
                 $out .= html_writer::start_tag('div', array('class' => 'mod-workbook-submission-status'));
-                if (!empty($item->submission)) {
-                    $out .= $this->submission_status($item->submission->status);
-                }
+                $out .= $this->submission_status($item->submission->status);
                 $out .= html_writer::end_tag('div');
 
                 // Grading.
                 $out .= html_writer::start_tag('div', array('class' => 'mod-workbook-submission-grading'));
-                if (!empty($item->submission)) {
-                    // Grade.
-                    $out .= $this->submission_grading($item->submission, $item->requiredgrade, !$userworkbook->can_assess_submission($item->submission));
-                }
+                // Grade.
+                $out .= $this->submission_grading($item->submission, $item->requiredgrade, !$userworkbook->can_assess_submission($item->submission));
                 $out .= html_writer::end_tag('div');
 
                 $out .= html_writer::end_tag('div');  // mod-workbook-item-sitrep

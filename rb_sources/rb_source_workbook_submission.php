@@ -123,10 +123,7 @@ class rb_source_workbook_submission extends rb_base_source {
         // requires the course join
         $this->add_course_category_table_to_joinlist($joinlist,
             'course', 'category');
-        $this->add_position_tables_to_joinlist($joinlist, 'base', 'userid');
-        // requires the position_assignment join
-        $this->add_manager_tables_to_joinlist($joinlist,
-            'position_assignment', 'reportstoid');
+        $this->add_job_assignment_tables_to_joinlist($joinlist, 'base', 'userid');
         $this->add_tag_tables_to_joinlist('course', $joinlist, 'course', 'id');
         $this->add_cohort_user_tables_to_joinlist($joinlist, 'base', 'userid');
         $this->add_cohort_course_tables_to_joinlist($joinlist, 'course', 'id');
@@ -305,14 +302,34 @@ class rb_source_workbook_submission extends rb_base_source {
                     )
                 )
             ),
+            new rb_column_option(
+                'base',
+                'submissionfiles',
+                get_string('files', 'rb_source_workbook_submission'),
+                'base.id',
+                array(
+                    'joins' => 'workbook_page_item',
+                    'displayfunc' => 'workbook_submission_files',
+                    'extrafields' => array(
+                        'userid' => 'base.userid',
+                        'workbookid' => 'workbook.id',
+                        'pageid' => 'workbook_page_item.pageid',
+                        'itemtype' => 'workbook_page_item.itemtype',
+                        'name' => 'workbook_page_item.name',
+                        'content' => 'workbook_page_item.content',
+                        'requiredgrade' => 'workbook_page_item.requiredgrade',
+                        'allowcomments' => 'workbook_page_item.allowcomments',
+                        'allowfileuploads' => 'workbook_page_item.allowfileuploads',
+                    )
+                )
+            ),
         );
 
         // include some standard columns
         $this->add_user_fields_to_columns($columnoptions);
         $this->add_course_fields_to_columns($columnoptions);
         $this->add_course_category_fields_to_columns($columnoptions);
-        $this->add_position_fields_to_columns($columnoptions);
-        $this->add_manager_fields_to_columns($columnoptions);
+        $this->add_job_assignment_fields_to_columns($columnoptions);
         $this->add_tag_fields_to_columns('course', $columnoptions);
         $this->add_cohort_user_fields_to_columns($columnoptions);
         $this->add_cohort_course_fields_to_columns($columnoptions);
@@ -395,8 +412,7 @@ class rb_source_workbook_submission extends rb_base_source {
         $this->add_user_fields_to_filters($filteroptions);
         $this->add_course_fields_to_filters($filteroptions);
         $this->add_course_category_fields_to_filters($filteroptions);
-        $this->add_position_fields_to_filters($filteroptions);
-        $this->add_manager_fields_to_filters($filteroptions);
+        $this->add_job_assignment_fields_to_filters($filteroptions);
         $this->add_tag_fields_to_filters('course', $filteroptions);
         $this->add_cohort_user_fields_to_filters($filteroptions);
         $this->add_cohort_course_fields_to_filters($filteroptions);
@@ -440,10 +456,17 @@ class rb_source_workbook_submission extends rb_base_source {
                 'workbook.id'
             ),
             new rb_param_option(
+                'pageitemid',
+                'base.pageitemid'
+            ),
+            new rb_param_option(
                 'superseded',
                 'base.superseded'
             ),
-
+            new rb_param_option(
+                'userid',
+                'base.userid'
+            ),
         );
 
         return $paramoptions;
@@ -611,6 +634,28 @@ class rb_source_workbook_submission extends rb_base_source {
 
     function rb_display_workbook_submission_superseded($superseded, $row, $isexport) {
         return !empty($superseded) ? get_string('yes') : get_string('no');
+    }
+
+    function rb_display_workbook_submission_files($submissionid, $row, $isexport) {
+        if (empty($row->allowfileuploads)) {
+            return '';
+        }
+        $itemtypeclass = '\mod_workbook\itemtype\\'.$row->itemtype;
+        if (!$itemtypeclass::supports_file_uploads()) {
+            return '';
+        }
+
+        $item = new stdClass();
+        $item->pageid = $row->pageid;
+        $item->itemtype = $row->itemtype;
+        $item->name = $row->name;
+        $item->content = $row->content;
+        $item->requiredgrade = $row->requiredgrade;
+        $item->allowcomments = $row->allowcomments;
+        $item->allowfileuploads = $row->allowfileuploads;
+        $itemtype = \mod_workbook\helper::get_itemtype_instance($row->workbookid, $item);
+
+        return $itemtype->list_page_item_files($row->userid, $submissionid);
     }
 
 

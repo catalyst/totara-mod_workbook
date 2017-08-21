@@ -64,9 +64,6 @@ $strhead = format_string($workbook->name).' - '.get_string('printthisworkbook', 
 $PAGE->set_title($strhead);
 $PAGE->set_heading($strhead);
 
-// Javascript.
-local_js();
-
 $args = array('args' => '{"workbookid":'.$userworkbook->workbook->id.
     ', "userid":'.$userid.
     '}');

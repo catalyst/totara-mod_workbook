@@ -136,7 +136,7 @@ M.mod_workbook_view = M.mod_workbook_view || {
     initResponses: function() {
         var objscope = this;
 
-        $('#mod-workbook-content').on('change', '.mod-workbook-item-response textarea', function() {
+        $('#mod-workbook-content').on('change', '.workbook-item-essay-response textarea', function() {
             var textarea = $(this);
             var workbookitem = textarea.closest('.mod-workbook-item');
             var itemid = workbookitem.attr('itemid');
@@ -182,7 +182,7 @@ M.mod_workbook_view = M.mod_workbook_view || {
             var workbookitem = $(this).closest('.mod-workbook-item');
             var pageid = $('.mod-workbook-user-page').attr('pageid');
             var itemid = workbookitem.attr('itemid');
-            var responsecontainer = submitbtn.closest('.mod-workbook-item-response');
+            var responsecontainer = submitbtn.closest('.mod-workbook-item-response').find('.workbook-item-essay-response');
 
             if (!confirm(M.util.get_string('confirmsubmit', 'workbook'))) {
                 return;
@@ -197,11 +197,11 @@ M.mod_workbook_view = M.mod_workbook_view || {
                     'wid': objscope.config.workbookid,
                     'userid': objscope.config.userid,
                     'iid': itemid,
-                    'response': responsecontainer.children('textarea').val()
+                    'response': responsecontainer.find('textarea').val()
                 },
                 beforeSend: function() {
                     submitbtn.attr('disabled', 'disabled');
-                    responsecontainer.children('textarea').attr('disabled', 'disabled');
+                    responsecontainer.find('textarea').attr('disabled', 'disabled');
                     workbookitem.children('.mod-workbook-submission-timemodified').append(objscope.loadingImg());
                 },
                 success: function(data) {

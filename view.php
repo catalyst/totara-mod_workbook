@@ -86,9 +86,6 @@ $PAGE->blocks->add_fake_block($navblock, reset($regions));
 $PAGE->set_title(format_string($workbook->name));
 $PAGE->set_heading(format_string($course->fullname).' - '.format_string($workbook->name));
 
-// Javascript.
-local_js();
-
 $PAGE->requires->strings_for_js(array('confirmsubmit'), 'workbook');
 $args = array('args' => '{"workbookid":'.$userworkbook->workbook->id.
     ', "userid":'.$userid.

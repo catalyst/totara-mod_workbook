@@ -21,39 +21,32 @@
  */
 
 /**
- * Workbook course submissions.
+ * Workbook item submission history.
  */
 
 require_once(dirname(dirname(dirname(__FILE__))).'/config.php');
 require_once($CFG->dirroot.'/mod/workbook/lib.php');
 require_once($CFG->dirroot.'/totara/reportbuilder/lib.php');
 
-$cmid = optional_param('cmid', 0, PARAM_INT); // Course_module ID
-$workbookid  = optional_param('wid', 0, PARAM_INT);
+$pageitemid  = required_param('piid', PARAM_INT);
+$userid = required_param('userid', PARAM_INT);
 $format = optional_param('format', '', PARAM_TEXT);
 $sid = optional_param('sid', '0', PARAM_INT);
 $debug = optional_param('debug', 0, PARAM_INT);
 
-if ($cmid) {
-    $cm         = get_coursemodule_from_id('workbook', $cmid, 0, false, MUST_EXIST);
-    $course     = $DB->get_record('course', array('id' => $cm->course), '*', MUST_EXIST);
-    $workbook  = $DB->get_record('workbook', array('id' => $cm->instance), '*', MUST_EXIST);
-} else if ($workbookid) {
-    $workbook  = $DB->get_record('workbook', array('id' => $workbookid), '*', MUST_EXIST);
-    $course     = $DB->get_record('course', array('id' => $workbook->course), '*', MUST_EXIST);
-    $cm         = get_coursemodule_from_instance('workbook', $workbook->id, $course->id, false, MUST_EXIST);
-} else {
-    print_error('You must specify a course_module ID or an instance ID');
-}
+$workbook = \mod_workbook\helper::get_workbook_for_pageitem($pageitemid);
+$pageitem = $DB->get_record('workbook_page_item', array('id' => $pageitemid), '*', MUST_EXIST);
+$course = $DB->get_record('course', array('id' => $workbook->course), '*', MUST_EXIST);
+$cm = get_coursemodule_from_instance('workbook', $workbook->id, $course->id, false, MUST_EXIST);
 
 require_login($course, true, $cm);
 
 $modcontext = context_module::instance($cm->id);
-if (!(has_capability('mod/workbook:assess', $modcontext))) {
+if (!\mod_workbook\helper::can_assess($modcontext, $userid) && !\mod_workbook\helper::can_submit($modcontext, $userid)) {
     print_error('accessdenied', 'workbook');
 }
 
-if (!$report = reportbuilder_get_embedded_report('workbook_assessment', array('workbookid' => $workbook->id), false, $sid)) {
+if (!$report = reportbuilder_get_embedded_report('workbook_user_submission_history', array('pageitemid' => $pageitemid, 'userid' => $userid), false, $sid)) {
     print_error('error:couldnotgenerateembeddedreport', 'totara_reportbuilder');
 }
 
@@ -72,17 +65,13 @@ if (groups_get_activity_groupmode($cm) != NOGROUPS) {
     }
 }
 
-
-if (!isset($SESSION->reportbuilder[$report->_id])) {
-    // Set a default status of 'submitted' for this report.
-    $SESSION->reportbuilder[$report->_id]['base-status']['operator'] = 1;  // equals.
-    $SESSION->reportbuilder[$report->_id]['base-status']['value'] = WORKBOOK_STATUS_SUBMITTED;
-}
-
-$PAGE->set_url('/mod/workbook/report.php', array('cmid' => $cm->id));
+$PAGE->set_url('/mod/workbook/submissionhistory.php', array('piid' => $pageitemid, 'userid' => $userid));
+$page = $DB->get_record('workbook_page', array('id' => $pageitem->pageid), '*', MUST_EXIST);
+$pagenavtitle = empty($page->navtitle) ? format_string($page->title) : format_string($page->navtitle);
 $PAGE->set_title(format_string($workbook->name));
-$headingstr = format_string($workbook->name).' - '.get_string('workbookassessment', 'workbook');
+$headingstr = format_string($workbook->name).' - '.get_string('itemsubmissionhistory', 'workbook');
 $PAGE->set_heading($headingstr);
+$PAGE->navbar->add($pagenavtitle, new moodle_url('/mod/workbook/view.php', array('id' => $cm->id, 'pid' => $page->id, 'userid' => $userid)));
 
 
 $renderer = $PAGE->get_renderer('totara_reportbuilder');
@@ -99,7 +88,7 @@ echo $OUTPUT->header();
 echo $OUTPUT->heading($headingstr);
 
 // Standard report stuff.
-echo $OUTPUT->container_start('', 'workbook_evaluation');
+echo $OUTPUT->container_start('', 'workbook_user_submission_history');
 
 $countfiltered = $report->get_filtered_count();
 $countall = $report->get_full_count();

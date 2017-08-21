@@ -59,7 +59,11 @@
 }
 
 .mod-workbook-item textarea {
-    width: 100%;
+    width: 98%;
+    margin: 1%;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
     height: 5em;
 }
 
@@ -94,6 +98,24 @@
 }
 
 .mod-workbook-page-navigation .mod-workbook-nav-next {
+    float: right;
+}
+
+.workbook-item-essay-response {
+    border: 1px solid lightgray;
+    margin-bottom: 5px;
+    border-radius: 0.3em;
+}
+
+.workbook-item-files {
+    margin-left: 1%;
+}
+
+.workbook-item-files-heading {
+    font-size: 0.8em;
+}
+
+.mod-workbook-item-submission-history-link {
     float: right;
 }
 

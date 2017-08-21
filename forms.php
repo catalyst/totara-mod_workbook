@@ -97,6 +97,9 @@ class workbook_page_item_form extends moodleform {
         }
         $mform->setType('allowcomments', PARAM_BOOL);
 
+        $mform->addElement('advcheckbox', 'allowfileuploads', get_string('allowfileuploads', 'workbook'));
+        $mform->setType('allowfileuploads', PARAM_BOOL);
+
 
         $mform->addElement('hidden', 'id');
         $mform->setType('id', PARAM_INT);

@@ -50,17 +50,22 @@ class user_workbook {
             $this->pages[$pageid]->items = \mod_workbook\page::get_items($pageid);
 
             // Also get the recent item submissions for this page.
-            $this->pages[$pageid]->items = array_map(
-                function($item) {
-                    $item->submission = null;  // Add empty submission items to make referencing easier later.
-                    return $item;
-                },
-                $this->pages[$pageid]->items);
             $itemsubmissions = $this->get_item_submissions($pageid);
             foreach ($itemsubmissions as $submit) {
                 $this->pages[$pageid]->items[$submit->pageitemid]->submission = $submit;
             }
+            // Generate placeholder submissions for non-existent ones, to make referencing easier later.
+            $this->pages[$pageid]->items = array_map(
+                function($item) {
+                    if (empty($item->submission)) {
+                        $item->submission = $this->create_new_submission($item->id, '');
+                    }
+                    return $item;
+                },
+                $this->pages[$pageid]->items
+            );
         }
+
     }
 
 
@@ -97,10 +102,6 @@ class user_workbook {
             return false;
         }
 
-        if (empty($this->pages[$item->pageid]->items[$item->id]->submission)) {
-            // No current submission, so allow.
-            return true;
-        }
         $currentsubmission = $this->pages[$item->pageid]->items[$item->id]->submission;
 
         return in_array($currentsubmission->status, array(WORKBOOK_STATUS_DRAFT, WORKBOOK_STATUS_GRADED));
@@ -108,7 +109,7 @@ class user_workbook {
 
 
     function can_assess_submission($submission) {
-        if (!$this->can_assess || empty($submission)) {
+        if (!$this->can_assess) {
             return false;
         }
 
@@ -118,17 +119,16 @@ class user_workbook {
 
     function get_submission($itemid, $pageid=null) {
         // Find item.
-        $submission = null;
         if (!empty($pageid) && !empty($this->pages[$pageid]->items[$itemid])) {
             return $this->pages[$pageid]->items[$itemid]->submission;
         }
 
         // Search for the item.
-        if ($item = $this->get_item($itemid)) {
+        if (($item = $this->get_item($itemid)) && !empty($item->submission)) {
             return $item->submission;
         }
 
-        return $submission;
+        return null;
     }
 
     function save_submission_response($itemid, $response) {
@@ -201,6 +201,27 @@ class user_workbook {
         $submission->id = $DB->insert_record('workbook_page_item_submit', $submission);
         $submission = $DB->get_record('workbook_page_item_submit', array('id' => $submission->id));
 
+        if (!empty($currentsubmission->superseded)) {
+            // Copy all files from the superseded submission to the new one.
+            $fs = \get_file_storage();
+            $itemfiles = $fs->get_area_files($this->modcontext->id,
+                                        'mod_workbook',
+                                        'submissions',
+                                        $currentsubmission->id,
+                                        'id',
+                                        false);
+            if ($itemfiles) {
+                $file_record = new \stdClass();
+                $file_record->contextid = $this->modcontext->id;
+                $file_record->component = 'mod_workbook';
+                $file_record->filearea = 'submissions';
+                $file_record->itemid = $submission->id;
+                foreach ($itemfiles as $ifile) {
+                    $fs->create_file_from_storedfile($file_record, $ifile);
+                }
+            }
+        }
+
         $transaction->allow_commit();
 
         return $submission;
@@ -265,7 +286,7 @@ class user_workbook {
                 if (!$itemtype->supports_grading()) {
                     continue;
                 }
-                if (empty($item->submission) || $item->submission->status != WORKBOOK_STATUS_PASSED) {
+                if ($item->submission->status != WORKBOOK_STATUS_PASSED) {
                     return false;
                 }
             }
@@ -300,16 +321,12 @@ class user_workbook {
             if (!$itemtype->supports_grading()) {
                 continue;
             }
-            if ($this->can_assess && !empty($item->submission)) {
+            if ($this->can_assess) {
                 if ($item->submission->status == WORKBOOK_STATUS_SUBMITTED) {
                     return true;
                 }
             }
             if ($this->can_submit) {
-                if (empty($item->submission)) {
-                    return true;
-                }
-
                 if (in_array($item->submission->status, array(WORKBOOK_STATUS_GRADED, WORKBOOK_STATUS_DRAFT))) {
                     return true;
                 }

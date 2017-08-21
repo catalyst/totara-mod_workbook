@@ -26,8 +26,7 @@ defined('MOODLE_INTERNAL') || die();
 
 class statichtml extends \mod_workbook\itemtype\base {
     function display_content() {
-        $cm = get_coursemodule_from_instance('workbook', $this->workbookid, 0, false, MUST_EXIST);
-        $content = file_rewrite_pluginfile_urls($this->item->content, 'pluginfile.php', \context_module::instance($cm->id)->id, 'mod_workbook', 'workbook_item_content', $this->item->id);
+        $content = file_rewrite_pluginfile_urls($this->item->content, 'pluginfile.php', $this->context->id, 'mod_workbook', 'workbook_item_content', $this->item->id);
 
         $out = format_text($content, FORMAT_HTML);
 
@@ -39,7 +38,7 @@ class statichtml extends \mod_workbook\itemtype\base {
         return '';
     }
 
-    function display_response_input($inputvalue, $disabled=false) {
+    function display_response_input($userid, $submission, $disabled=false) {
         // No responses for static content ;)
         return '';
     }

@@ -3,6 +3,7 @@
 $string['assess'] = 'Assess';
 $string['assesslink'] = 'Assess link';
 $string['content'] = 'Content';
+$string['files'] = 'Files';
 $string['grade'] = 'Grade';
 $string['gradedby'] = 'Graded by';
 $string['item'] = 'Item';
@@ -26,6 +27,7 @@ $string['workbook'] = 'Workbook';
 $string['workbookassessment'] = 'Workbook Submissions Assessment';
 $string['workbookname'] = 'Workbook name';
 $string['workbooksubmission'] = 'Workbook Submissions';
+$string['workbooksubmissionhistory'] = 'Workbook Submission History';
 $string['user'] = 'User';
 
 

@@ -26,31 +26,48 @@ defined('MOODLE_INTERNAL') || die();
 
 class essay extends \mod_workbook\itemtype\base {
     function display_content() {
-        $cm = get_coursemodule_from_instance('workbook', $this->workbookid, 0, false, MUST_EXIST);
-        $content = file_rewrite_pluginfile_urls($this->item->content, 'pluginfile.php', \context_module::instance($cm->id)->id, 'mod_workbook', 'workbook_item_content', $this->item->id);
+        $content = file_rewrite_pluginfile_urls($this->item->content, 'pluginfile.php', $this->context->id, 'mod_workbook', 'workbook_item_content', $this->item->id);
 
         $out = format_text($content, FORMAT_HTML);
         return $out;
     }
 
-    function display_response_input($inputvalue, $static=false) {
+    function display_response_input($userid, $submission, $static=false) {
+        $response = empty($submission->response) ? '' : $submission->response;
 
         $out = '';
         if ($static) {
-            $out .= format_text($inputvalue);
-        } else {
-            $out = \html_writer::start_tag('textarea',
-                array('autocomplete' => 'off', 'name' => "workbook-essay-response"));
-            $out .= $inputvalue;
-            $out .= \html_writer::end_tag('textarea');
-            $out .= \html_writer::empty_tag('input', array(
-                'type' => 'button',
-                'value' => get_string('submitforassessment', 'workbook'),
-                'class' => 'workbook-btnsubmit',
-                'autocomplete' => 'off')
-            );
+            $out .= format_text($response);
+
+            $out .= $this->file_uploads($userid, $submission->id, true);
+
+            return $out;
         }
+
+        $out = \html_writer::start_tag('div', array('class' => 'workbook-item-essay-response'));
+        // Text area.
+        $out .= \html_writer::start_tag('textarea',
+            array('autocomplete' => 'off', 'name' => "workbook-essay-response"));
+        $out .= $response;
+        $out .= \html_writer::end_tag('textarea');
+
+        $out .= $this->file_uploads($userid, $submission->id);
+
+        // Submit button.
+        $out .= \html_writer::empty_tag('input', array(
+            'type' => 'button',
+            'value' => get_string('submitforassessment', 'workbook'),
+            'class' => 'workbook-btnsubmit',
+            'autocomplete' => 'off')
+        );
+
 
         return $out;
     }
+
+
+    static function supports_file_uploads() {
+        return true;
+    }
+
 }
