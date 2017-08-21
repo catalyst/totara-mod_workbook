@@ -202,7 +202,7 @@ Feature: Workbook submission and assessment
     And I run the scheduled task "\mod_workbook\task\send_submission_notifications"
 
     # Check notifications
-    And I click on "My Learning" in the totara menu
+    And I click on "Dashboard" in the totara menu
     Then I should see "Essay question submitted by Eugene1"
     And I should not see "Essay question submitted by Eugene3"
 
@@ -211,6 +211,7 @@ Feature: Workbook submission and assessment
     And I follow "Course 1"
     And I follow "Separate groups workbook"
     And I follow "Assess submissions"
+    And I press "Clear"
     Then I should see "Eugene1 Student1"
     And I should see "Page item 2"
     And I should not see "Eugene2 Student2"
@@ -241,7 +242,7 @@ Feature: Workbook submission and assessment
     When I log in as "student1"
     And I run the scheduled task "\mod_workbook\task\send_graded_notifications"
     # Check notifications
-    And I click on "My Learning" in the totara menu
+    And I click on "Dashboard" in the totara menu
     Then I should see "Your Essay question submission has been assessed"
     And I log out
 
@@ -250,6 +251,7 @@ Feature: Workbook submission and assessment
     And I follow "Course 1"
     And I follow "Separate groups workbook"
     And I follow "Assess submissions"
+    And I press "Clear"
     Then I should see "Eugene1 Student1"
     And I should see "Page item 2"
     And I should see "Eugene3 Student3"
@@ -257,3 +259,4 @@ Feature: Workbook submission and assessment
     And I log out
 
     # todo: comment notifications?
+    # todo: file submissions
