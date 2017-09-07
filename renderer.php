@@ -90,6 +90,7 @@ class mod_workbook_renderer extends plugin_renderer_base {
         $out = '';
 
         $cm = get_coursemodule_from_instance('workbook', $workbook->id, $workbook->course, false, MUST_EXIST);
+        $context = context_module::instance($cm->id)->id;
 
         $items = $DB->get_records('workbook_page_item', array('pageid' => $pageid), 'sortorder');
 
@@ -97,8 +98,8 @@ class mod_workbook_renderer extends plugin_renderer_base {
         $maxsortorder = $DB->get_field('workbook_page_item', 'MAX(sortorder)', array('pageid' => $pageid));
         foreach ($items as $item) {
             $out .= html_writer::start_tag('div', array('class' => 'config-mod-workbook-page-item'));
-            $item->content = file_rewrite_pluginfile_urls($item->content, 'pluginfile.php', context_module::instance($cm->id)->id, 'mod_workbook', 'workbook_item_content', $item->id);
-            $out .= format_text($item->content, FORMAT_HTML);
+            $item->content = file_rewrite_pluginfile_urls($item->content, 'pluginfile.php', $context, 'mod_workbook', 'workbook_item_content', $item->id);
+            $out .= format_text($item->content, FORMAT_HTML, array('noclean'=> true, 'overflowdiv'=> true, 'context'=> $context));
             $editurl = new moodle_url('/mod/workbook/pageitem.php',
                 array('wid' => $workbook->id, 'pid' => $pageid, 'id' => $item->id));
             $out .= $this->output->action_icon($editurl, new pix_icon('t/edit', get_string('edititem', 'workbook')));

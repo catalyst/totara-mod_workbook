@@ -83,7 +83,7 @@ class workbook_page_item_form extends moodleform {
 
         // TODO: use the itemtype classes here eventually
         $mform->addElement('editor', 'content_editor', get_string('content', 'workbook'), null, $TEXTAREA_OPTIONS);
-        $mform->setType('content_editor', PARAM_CLEANHTML);
+        $mform->setType('content_editor', PARAM_RAW);
         $mform->addRule('content_editor', null, 'required', null, 'client');
 
         $mform->addElement('text', 'requiredgrade', get_string('requiredgrade', 'workbook'), array('size' => 4));

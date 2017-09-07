@@ -37,7 +37,7 @@ abstract class base {
     }
 
     function display_content() {
-        $out = format_text($this->item->content, FORMAT_HTML);
+        $out = format_text($this->item->content, FORMAT_HTML, array('noclean'=> true, 'overflowdiv'=> true, 'context'=> $this->context));
 
         return $out;
     }

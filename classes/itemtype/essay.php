@@ -28,7 +28,7 @@ class essay extends \mod_workbook\itemtype\base {
     function display_content() {
         $content = file_rewrite_pluginfile_urls($this->item->content, 'pluginfile.php', $this->context->id, 'mod_workbook', 'workbook_item_content', $this->item->id);
 
-        $out = format_text($content, FORMAT_HTML);
+        $out = format_text($content, FORMAT_HTML, array('noclean'=> true, 'overflowdiv'=> true, 'context'=> $this->context));
         return $out;
     }
 
