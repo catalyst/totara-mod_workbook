@@ -398,12 +398,6 @@ class rb_source_workbook_submission extends rb_base_source {
                 get_string('itemname', 'rb_source_workbook_submission'),
                 'text'
             ),
-            new rb_filter_option(
-                'base',
-                'timegraded',
-                get_string('timegraded', 'rb_source_workbook_submission'),
-                'date'
-            ),
         );
 
         // include some standard filters
@@ -683,6 +677,42 @@ class rb_source_workbook_submission extends rb_base_source {
         }
 
         return $typelist;
+    }
+
+    /**
+     * Inject column_test data into database.
+     * @param totara_reportbuilder_column_testcase $testcase
+     */
+    public function phpunit_column_test_add_data(totara_reportbuilder_column_testcase $testcase) {
+       global $DB;
+
+       if (!PHPUNIT_TEST) {
+           throw new coding_exception('phpunit_prepare_test_data() cannot be used outside of unit tests');
+       }
+       $data = array(
+            'workbook' => array(
+                array('id' => 1, 'course' => 1, 'name' => 'test workbook', 'intro' => '', 'timecreated' => 1)
+            ),
+            'workbook_page' => array(
+                array('id' => 1, 'workbookid' => 1, 'name' => 'test workbook page')
+            ),
+            'workbook_page_item' => array(
+                array('id' => 1, 'workbookid' => 1, 'pageid' => 1, 'name' => 'test workbook page item', 'content' => 'some test content'),
+            ),
+            'workbook_page_item_submit' => array(
+                array('id' => 1, 'userid' => 2, 'pageitemid' => 1, 'status' => 1, 'timemodified' => 1, 'modifiedby' => 1),
+            ),
+            'user_enrolments' => array(
+                array('id' => 1, 'status' => 0, 'enrolid' => 1, 'userid' => 2)
+            ),
+        );
+
+        foreach ($data as $table => $data) {
+            foreach($data as $datarow) {
+                $DB->import_record($table, $datarow);
+            }
+            $DB->get_manager()->reset_sequence(new xmldb_table($table));
+        }
     }
 }
 
