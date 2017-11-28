@@ -412,31 +412,9 @@ class rb_source_workbook_submission extends rb_base_source {
     }
 
     protected function define_contentoptions() {
-        $contentoptions = array(
-            new rb_content_option(
-                'current_pos',
-                get_string('currentpos', 'totara_reportbuilder'),
-                'position.path',
-                'position'
-            ),
-            new rb_content_option(
-                'current_org',
-                get_string('currentorg', 'totara_reportbuilder'),
-                'organisation.path',
-                'organisation'
-            ),
-            new rb_content_option(
-                'user',
-                get_string('user', 'rb_source_workbook_submission'),
-                array(
-                    'userid' => 'base.userid',
-                    'managerid' => 'position_assignment.managerid',
-                    'managerpath' => 'position_assignment.managerpath',
-                    'postype' => 'position_assignment.type',
-                ),
-                'position_assignment'
-            ),
-        );
+        $contentoptions = array();
+        $this->add_basic_user_content_options($contentoptions);
+
         return $contentoptions;
     }
 
